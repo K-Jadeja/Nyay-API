@@ -3,9 +3,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from langchain.chat_models import ChatOpenAI
 from dotenv import load_dotenv
-import pinecone
+import pinecone_utils
 from langchain.vectorstores import Pinecone
-
+from pinecone_utils import upsert_doc
 app = Flask(__name__)
 CORS(app, origins=["*"])  # Replace with your frontend domain or URL
 
@@ -23,44 +23,23 @@ def home():
     return "Hello World!"
 
 @app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part received in the request"}), 400
+def upload_document():
+    try:
+        document = request.form.get('document')
 
-    uploaded_file = request.files['file']
+        if not document:
+            return jsonify({"error": "Invalid or missing 'document' in the request"}), 400
 
-    # if uploaded_file.filename == '':
-    #     return jsonify({"error": "No selected file"}), 400
+        upsert_doc([document])
 
-    # if allowed_file(uploaded_file.filename):
-    #     filename = os.path.join(app.config['UPLOAD_FOLDER'], str(uploaded_file.filename))
-    #     uploaded_file.save(filename)
+        return jsonify({"message": "Data uploaded successfully"}), 200
 
-    #     df = None
-
-    #     if filename.endswith('.csv'):
-    #         df = pd.read_csv(filename)
-    #     else:
-    #         df = pd.read_excel(filename)
-
-    #     llm = ChatOpenAI(
-    #             model="gpt-3.5-turbo-0613"
-    #     )
-    #     print("Creating agent...")
-    #     agents[ip_address] = create_pandas_dataframe_agent(
-    #         llm,
-    #         df,
-    #         verbose=True,
-    #         agent_type=AgentType.OPENAI_FUNCTIONS,
-    #         agent_executor_kwargs={"handle_parsing_errors": True},
-    #     )
-    #     print("file uploaded successfully")
-    #     return jsonify({"message": "File uploaded successfully", "ip_address": ip_address}), 200
-    # else:
-    #     return jsonify({"error": "Invalid file format"}), 400
+    except Exception as e:
+        app.logger.error(f"An error occurred: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred"}), 500
 
 @app.route('/chat', methods=['POST'])
-def chat_with_agent():
+def chat():
     try:
         user_input = request.form.get('user_input')
 
