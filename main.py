@@ -22,23 +22,60 @@ os.environ["LANGCHAIN_PROJECT"] = "Nyay-API"
 def home():
     return "Hello World!"
 
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part received in the request"}), 400
+
+    uploaded_file = request.files['file']
+
+    # if uploaded_file.filename == '':
+    #     return jsonify({"error": "No selected file"}), 400
+
+    # if allowed_file(uploaded_file.filename):
+    #     filename = os.path.join(app.config['UPLOAD_FOLDER'], str(uploaded_file.filename))
+    #     uploaded_file.save(filename)
+
+    #     df = None
+
+    #     if filename.endswith('.csv'):
+    #         df = pd.read_csv(filename)
+    #     else:
+    #         df = pd.read_excel(filename)
+
+    #     llm = ChatOpenAI(
+    #             model="gpt-3.5-turbo-0613"
+    #     )
+    #     print("Creating agent...")
+    #     agents[ip_address] = create_pandas_dataframe_agent(
+    #         llm,
+    #         df,
+    #         verbose=True,
+    #         agent_type=AgentType.OPENAI_FUNCTIONS,
+    #         agent_executor_kwargs={"handle_parsing_errors": True},
+    #     )
+    #     print("file uploaded successfully")
+    #     return jsonify({"message": "File uploaded successfully", "ip_address": ip_address}), 200
+    # else:
+    #     return jsonify({"error": "Invalid file format"}), 400
+
 @app.route('/chat', methods=['POST'])
-def chat():
+def chat_with_agent():
     try:
-        # Get the input query from the JSON requests
-        data = request.get_json()
-        if 'query' not in data:
-            return jsonify({'error': 'Input query not provided'}), 400
+        user_input = request.form.get('user_input')
+
+        if not user_input:
+            return jsonify({"error": "Invalid or missing 'user_input' in the request"}), 400
 
         # Append "Fuck you" to the input query
-        input_query = data['query']
-        output_query = f"{input_query} Fuck you"
+        output_query = f"{user_input} Fuck you"
 
         return jsonify({'result': output_query})
 
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An unexpected error occurred"}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000))
