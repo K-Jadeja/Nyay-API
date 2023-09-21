@@ -3,9 +3,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from langchain.chat_models import ChatOpenAI
 from dotenv import load_dotenv
-import pinecone_utils
 from langchain.vectorstores import Pinecone
 from pinecone_utils import upsert_doc
+
 app = Flask(__name__)
 CORS(app, origins=["*"])  # Replace with your frontend domain or URL
 
