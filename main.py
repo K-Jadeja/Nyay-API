@@ -18,20 +18,23 @@ os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
 os.environ["LANGCHAIN_API_KEY"] = "ls__ec5f7d678abe4b0f9a71f0311be34540"
 os.environ["LANGCHAIN_PROJECT"] = "Nyay-API"
 
+@app.route('/', methods=['POST'])
+def home():
+    return "Hello World!"
 
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
-        # Get the input sentence from the JSON request
+        # Get the input query from the JSON requests
         data = request.get_json()
-        if 'sentence' not in data:
-            return jsonify({'error': 'Input sentence not provided'}), 400
+        if 'query' not in data:
+            return jsonify({'error': 'Input query not provided'}), 400
 
-        # Append "Fuck you" to the input sentence
-        input_sentence = data['sentence']
-        output_sentence = f"{input_sentence} Fuck you"
+        # Append "Fuck you" to the input query
+        input_query = data['query']
+        output_query = f"{input_query} Fuck you"
 
-        return jsonify({'result': output_sentence})
+        return jsonify({'result': output_query})
 
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
