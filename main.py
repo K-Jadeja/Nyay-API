@@ -22,11 +22,12 @@ ALLOWED_EXTENSIONS = {'pdf'}
 @app.route('/', methods=['POST'])
 def home():
     return "Hello World!"
-
 @app.route('/uploads', methods=['POST'])
 def upload():
     try:
         file = request.files['file']
+        if not os.path.exists('uploads'):
+            os.makedirs('uploads')
         file_path = os.path.join('uploads', file.filename)
         file.save(file_path)
 
@@ -41,7 +42,6 @@ def upload():
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An unexpected error occurred"}), 500
-    
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
@@ -63,3 +63,4 @@ def chat():
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000))
+
