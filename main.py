@@ -7,7 +7,7 @@ from langchain.vectorstores import Pinecone
 from pinecone_utils import upsert_doc, retrieve_answer
 
 app = Flask(__name__)
-CORS(app, origins=["*"])  # Replace with your frontend domain or URL
+CORS(app, origins=["*"])  
 
 load_dotenv()
 
@@ -17,27 +17,31 @@ os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
 os.environ["LANGCHAIN_API_KEY"] = "ls__ec5f7d678abe4b0f9a71f0311be34540"
 os.environ["LANGCHAIN_PROJECT"] = "Nyay-API"
-
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'pdf'}
 @app.route('/', methods=['POST'])
 def home():
     return "Hello World!"
 
-@app.route('/upload', methods=['POST'])
-def upload_document():
+@app.route('/uploads', methods=['POST'])
+def upload():
     try:
-        document = request.form.get('document')
+        file = request.files['file']
+        file_path = os.path.join('uploads', file.filename)
+        file.save(file_path)
 
-        if not document:
-            return jsonify({"error": "Invalid or missing 'document' in the request"}), 400
-
-        upsert_doc([document])
-
-        return jsonify({"message": "Data uploaded successfully"}), 200
+        try:
+            upsert_doc()
+            os.remove(file_path)
+            return jsonify({"message": "Data uploaded successfully"}), 200
+        except Exception as e:
+            app.logger.error(f"An error occurred during upsert_doc: {str(e)}")
+            return jsonify({"error": "An error occurred during data upload"}), 500
 
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An unexpected error occurred"}), 500
-
+    
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
