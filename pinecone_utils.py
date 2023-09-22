@@ -1,4 +1,5 @@
 import pinecone
+import openai
 import os
 from dotenv import load_dotenv
 from langchain.vectorstores import Pinecone
@@ -6,7 +7,8 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain.chat_models import ChatOpenAI
-from langchain.chains import RetrievalQA
+from langchain.document_loaders import PyPDFLoader, DirectoryLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 load_dotenv()
 PINCONE_API_KEY = os.environ.get("PINCONE_API_KEY")
@@ -41,11 +43,20 @@ index = pinecone.Index("nyay-index")
 vectorstore = Pinecone(
     index, embed.embed_query, text_field
 )
+# split docs into chunks
+def split_docs(documents,chunk_size=1300,chunk_overlap=200):
+  text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+  docs = text_splitter.split_documents(documents)
+  return docs
 
 # Upsert article to vectorstore
-def upsert_doc(texts):
-    vectorstore = Pinecone(index, embed.embed_query, "text")
-    vectorstore.add_texts(texts)
+def upsert_doc():
+    loader = DirectoryLoader('uploads', glob="./*.pdf", loader_cls=PyPDFLoader)
+    documents = loader.load()
+    docs = split_docs(documents)
+    print(docs[95].page_content)
+    index = Pinecone.from_documents(docs, embed, index_name="nyay-index")
+    print(index)
 
 # def get_similiar_docs(query,k=2,score=False):
 #   if score:
