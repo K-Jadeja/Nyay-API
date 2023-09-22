@@ -42,7 +42,6 @@ def upload():
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An unexpected error occurred"}), 500
-
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
