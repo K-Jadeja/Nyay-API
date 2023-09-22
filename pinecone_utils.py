@@ -57,7 +57,6 @@ def upsert_doc(texts):
 template = """You are 'Legal.ly', a helpful Know-your-rights bot.
 Use the following pieces of context to answer the question at the end. 
 If the context does not have the answer, make up a most appropriate and helpful answer. 
-Keep the answer as concise as possible. 
 You are only supposed to answer law and rights related questons. 
 Decline politely if the question is outside your domain.
 Always answer in the language of the question. 
