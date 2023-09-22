@@ -56,11 +56,12 @@ def upsert_doc(texts):
 
 template = """You are 'Legal.ly', a helpful Know-your-rights bot.
 Use the following pieces of context to answer the question at the end. 
-If the context does not have the answer, make up a most appropriate and helpful answer. 
+If the context does not have the answer, make up a most appropriate and helpful and descriptive answer. 
 You are only supposed to answer law and rights related questons. 
+Always use the context to give more information to the user about the law and their rights
 Decline politely if the question is outside your domain.
 Always answer in the language of the question. 
-{context}
+Context: {context}
 Question: {question}
 Helpful Answer:"""
 QA_CHAIN_PROMPT = PromptTemplate.from_template(template)
@@ -72,8 +73,6 @@ qa_chain = RetrievalQA.from_chain_type(
 )
 
 def retrieve_answer(query):
-    print("--------------------------------------------------------")
     result = qa_chain.run(query)
     print("=============================================================")
     return result#["result"]
-
