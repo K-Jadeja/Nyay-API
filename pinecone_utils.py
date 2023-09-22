@@ -31,12 +31,12 @@ pinecone.init(
     environment=PINECONE_ENV
 )
 # Initialize the index
-index = pinecone.Index("nyay")
+index = pinecone.Index("nyay-index")
 
 text_field = "text"
 
 # switch back to normal index for langchain
-index = pinecone.Index("nyay")
+index = pinecone.Index("nyay-index")
 
 vectorstore = Pinecone(
     index, embed.embed_query, text_field
