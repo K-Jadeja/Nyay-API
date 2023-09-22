@@ -54,7 +54,7 @@ def upsert_doc():
     loader = DirectoryLoader('uploads', glob="./*.pdf", loader_cls=PyPDFLoader)
     documents = loader.load()
     docs = split_docs(documents)
-    print(docs[95].page_content)
+    # print(docs[95].page_content)
     index = Pinecone.from_documents(docs, embed, index_name="nyay-index")
     print(index)
 
@@ -66,6 +66,7 @@ def upsert_doc():
 #   return similar_docs
 
 template = """You are 'Legal.ly', a helpful Know-your-rights bot and legal advisor.
+You are well versed in the laws of India and indian constitution and refer to it often.
 Use the following pieces of context to answer the question at the end. 
 If the context does not have the answer, make up a most appropriate and helpful and descriptive answer for an indian. 
 You are only supposed to answer law and rights related questons. 
