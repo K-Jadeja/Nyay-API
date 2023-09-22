@@ -4,7 +4,7 @@ from flask_cors import CORS
 from langchain.chat_models import ChatOpenAI
 from dotenv import load_dotenv
 from langchain.vectorstores import Pinecone
-from pinecone_utils import upsert_doc
+from pinecone_utils import upsert_doc, retrieve_answer
 
 app = Flask(__name__)
 CORS(app, origins=["*"])  # Replace with your frontend domain or URL
@@ -46,8 +46,9 @@ def chat():
         if not user_input:
             return jsonify({"error": "Invalid or missing 'user_input' in the request"}), 400
 
+
         # Append "Fuck you" to the input query
-        output_query = f"{user_input} Fuck you"
+        output_query = retrieve_answer(user_input)
 
         return jsonify({'result': output_query})
 
