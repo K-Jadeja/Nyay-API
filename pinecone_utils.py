@@ -15,6 +15,7 @@ PINCONE_API_KEY = os.environ.get("PINCONE_API_KEY")
 PINECONE_ENV = os.environ.get("PINECONE_ENV")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
+
 model_name = 'text-embedding-ada-002'
 embed = OpenAIEmbeddings(
     model=model_name,

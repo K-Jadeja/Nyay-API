@@ -1,13 +1,13 @@
 import os
+import detectlanguage
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from langchain.chat_models import ChatOpenAI
 from dotenv import load_dotenv
 from langchain.vectorstores import Pinecone
 from pinecone_utils import upsert_doc, retrieve_answer
-from whatthelang import WhatTheLang
-wtl = WhatTheLang()
-wtl.predict_lang("இது ஒரு உதாரணம்")
+from easygoogletranslate import EasyGoogleTranslate
+
 
 app = Flask(__name__)
 CORS(app, origins=["*"])  
@@ -15,6 +15,9 @@ CORS(app, origins=["*"])
 load_dotenv()
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+# DETECT_LANGUAGE_API_KEY = os.environ.get("DETECT_LANGUAGE_API_KEY")
+# detectlanguage.configuration.api_key = DETECT_LANGUAGE_API_KEY
+detectlanguage.configuration.api_key = "2069169580e74f64a698f94d02cb7d38"
 
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
@@ -45,6 +48,7 @@ def upload():
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An unexpected error occurred"}), 500
+    
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
@@ -52,12 +56,15 @@ def chat():
 
         if not user_input:
             return jsonify({"error": "Invalid or missing 'user_input' in the request"}), 400
-        
-        wtl = WhatTheLang()
-        print(wtl.predict_lang("இது ஒரு உதாரணம்"))
+        source_lang = detectlanguage.simple_detect(user_input)
+        print("ahhh")
         output_query = retrieve_answer(user_input)
+        print(output_query)
+        translator = EasyGoogleTranslate()
+        result = translator.translate(output_query, target_language=source_lang)
 
-        return jsonify({'result': output_query})
+
+        return jsonify({'result': result})
 
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
