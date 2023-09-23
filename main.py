@@ -18,6 +18,7 @@ OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 # DETECT_LANGUAGE_API_KEY = os.environ.get("DETECT_LANGUAGE_API_KEY")
 # detectlanguage.configuration.api_key = DETECT_LANGUAGE_API_KEY
 detectlanguage.configuration.api_key = "2069169580e74f64a698f94d02cb7d38"
+translator = EasyGoogleTranslate()
 
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
@@ -57,10 +58,10 @@ def chat():
         if not user_input:
             return jsonify({"error": "Invalid or missing 'user_input' in the request"}), 400
         source_lang = detectlanguage.simple_detect(user_input)
+        user_input = translator.translate(user_input, target_language='en')
         print("ahhh")
         output_query = retrieve_answer(user_input)
         print(output_query)
-        translator = EasyGoogleTranslate()
         result = translator.translate(output_query, target_language=source_lang)
 
 
