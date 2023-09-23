@@ -5,6 +5,9 @@ from langchain.chat_models import ChatOpenAI
 from dotenv import load_dotenv
 from langchain.vectorstores import Pinecone
 from pinecone_utils import upsert_doc, retrieve_answer
+from whatthelang import WhatTheLang
+wtl = WhatTheLang()
+wtl.predict_lang("இது ஒரு உதாரணம்")
 
 app = Flask(__name__)
 CORS(app, origins=["*"])  
@@ -49,9 +52,9 @@ def chat():
 
         if not user_input:
             return jsonify({"error": "Invalid or missing 'user_input' in the request"}), 400
-
-
-        # Append "Fuck you" to the input query
+        
+        wtl = WhatTheLang()
+        print(wtl.predict_lang("இது ஒரு உதாரணம்"))
         output_query = retrieve_answer(user_input)
 
         return jsonify({'result': output_query})
